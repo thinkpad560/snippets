@@ -1,10 +1,24 @@
 require 'rake'
 
-task :html => %W[ch1.html ch2.html ch3.html]
-
-%W[ch1.md ch2.md ch3.md].each do |md_file|
-  html_file = File.basename(md_file, ".md") + ".html"
-  file html_file => md_file do
-    sh "pandoc -o #{html_file} #{md_file}"
+source_files = Rake::FileList.new("**/*.md", "**/*.markdown") do |fl|
+  fl.exclude("~*")
+  puts fl
+  puts "xxxxx"
+  fl.exclude(/^scratch\//)
+  fl.exclude do |f|
+    `git ls-files #{f}`.empty?
+    puts fl
   end
+end
+
+task :default => :html
+
+task :html => source_files.ext(".html") 
+
+rule ".html" => ".md" do |t|
+  sh "pandoc -o #{t.name} #{t.source}"
+end
+
+rule ".html" => ".markdown" do |t|
+  sh "pandoc -o #{t.name} #{t.source}"
 end

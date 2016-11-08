@@ -1,0 +1,4 @@
+require 'rake'
+
+files = Rake::FileList.new('*.md','*.markdown','*/*.md')
+puts files
